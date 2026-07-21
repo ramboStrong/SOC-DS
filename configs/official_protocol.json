@@ -1,0 +1,165 @@
+{
+  "protocol_name": "SOC-DS R2 official independent-seed protocol",
+  "paper_title": "SOC-DS: Distance-Stratified Space Density Estimation for Ground-Based Optical Space-Object Population Assessment",
+  "corpus": {
+    "population_scales": [
+      50,
+      100,
+      150,
+      200,
+      250,
+      300,
+      350,
+      400,
+      450,
+      500
+    ],
+    "sequences_per_scale": 40,
+    "frames_per_sequence": 100,
+    "image_resolution": [
+      640,
+      360
+    ],
+    "density_resolution": [
+      80,
+      45
+    ],
+    "train_sequence_indices": [
+      1,
+      30
+    ],
+    "validation_sequence_indices": [
+      31,
+      35
+    ],
+    "test_sequence_indices": [
+      36,
+      40
+    ],
+    "first_target_frame_index": 1,
+    "training_sequences": 300,
+    "validation_sequences": 50,
+    "test_sequences": 50,
+    "training_two_frame_samples": 29700,
+    "validation_two_frame_samples": 4950,
+    "test_two_frame_samples": 4950,
+    "distance_strata": {
+      "labels": [
+        "Near",
+        "Middle",
+        "Far"
+      ],
+      "sampling_intervals_blender_units": [
+        [
+          140.0,
+          210.0
+        ],
+        [
+          230.0,
+          310.0
+        ],
+        [
+          340.0,
+          460.0
+        ]
+      ],
+      "decision_thresholds_blender_units": [
+        220.0,
+        325.0
+      ],
+      "sampling_weights": [
+        1.0,
+        1.0,
+        1.0
+      ]
+    }
+  },
+  "formal_training": {
+    "independent_seeds": [
+      12345,
+      23456,
+      34567
+    ],
+    "epochs": 30,
+    "batch_size": 1,
+    "num_workers": 4,
+    "optimizer": "Adam",
+    "learning_rate": 0.0001,
+    "weight_decay": 0.0005,
+    "learning_rate_schedule": "fixed",
+    "deterministic": true,
+    "early_stopping": false,
+    "use_imagenet_pretrained_frontend": true,
+    "use_star_enhanced_inputs": true,
+    "fallback_to_raw_images": true,
+    "loss_weights": {
+      "lambda_layer": 1.0,
+      "lambda_total": 0.2,
+      "lambda_consistency": 1.0,
+      "lambda_depth": 0.1
+    },
+    "loss_weight_selection": "Coefficients were chosen to balance the numerical magnitudes of the loss components and were fixed before the formal multi-seed experiments."
+  },
+  "checkpoint_selection": {
+    "A0_to_A4_and_B1_to_B4": "lowest validation stratum-wise MAE",
+    "A5_and_A6": "lowest validation total-count MAE",
+    "selected_independently_per_seed": true
+  },
+  "raft": {
+    "checkpoint": "pretrained raft-things checkpoint",
+    "parameters_frozen": true,
+    "update_iterations": 4,
+    "flow_mode": "bidirectional",
+    "forward_call": "I_(t-1) -> I_t",
+    "backward_call": "I_t -> I_(t-1)",
+    "input_resolution": [
+      640,
+      360
+    ],
+    "input_range": "RGB values converted from uint8 to float without ImageNet normalization"
+  },
+  "official_variants": {
+    "baselines": [
+      "A0_full_socds",
+      "A1_single_frame_stratified",
+      "A2_no_depth",
+      "A3_no_flow",
+      "A4_direct_stratified_head",
+      "A5_single_projected_density",
+      "A6_direct_count_regression"
+    ],
+    "loss_ablations": {
+      "B1_no_total_loss": {
+        "lambda_layer": 1.0,
+        "lambda_total": 0.0,
+        "lambda_consistency": 1.0,
+        "lambda_depth": 0.1
+      },
+      "B2_no_consistency_loss": {
+        "lambda_layer": 1.0,
+        "lambda_total": 0.2,
+        "lambda_consistency": 0.0,
+        "lambda_depth": 0.1
+      },
+      "B3_no_depth_loss": {
+        "lambda_layer": 1.0,
+        "lambda_total": 0.2,
+        "lambda_consistency": 1.0,
+        "lambda_depth": 0.0
+      },
+      "B4_no_layer_loss": {
+        "lambda_layer": 0.0,
+        "lambda_total": 0.2,
+        "lambda_consistency": 1.0,
+        "lambda_depth": 0.1
+      }
+    }
+  },
+  "reporting": {
+    "seed_summary": "mean and sample standard deviation over three independent runs",
+    "paired_unit": "test sequence",
+    "confidence_interval_method": "population-scale-stratified hierarchical bootstrap",
+    "effect_size": "paired Cohen's d_z",
+    "difference_direction": "Positive values favor A0: ablation/baseline minus A0 for error metrics, and A0 minus comparator for allocation diagonals."
+  }
+}
