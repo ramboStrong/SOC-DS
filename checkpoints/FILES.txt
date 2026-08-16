@@ -1,3 +1,3 @@
-A0_seed12345_best.pth.tar
-A0_seed23456_best.pth.tar
-A0_seed34567_best.pth.tar
+seed12345_best.pth.tar
+seed23456_best.pth.tar
+seed34567_best.pth.tar
