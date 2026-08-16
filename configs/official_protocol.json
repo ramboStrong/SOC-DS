@@ -1,0 +1,132 @@
+{
+  "corpus": {
+    "population_scales": [
+      50,
+      100,
+      150,
+      200,
+      250,
+      300,
+      350,
+      400,
+      450,
+      500
+    ],
+    "sequences_per_scale": 40,
+    "frames_per_sequence": 100,
+    "image_resolution": [
+      640,
+      360
+    ],
+    "density_resolution": [
+      80,
+      45
+    ],
+    "train_sequence_indices": [
+      1,
+      30
+    ],
+    "validation_sequence_indices": [
+      31,
+      35
+    ],
+    "test_sequence_indices": [
+      36,
+      40
+    ],
+    "first_target_frame_index": 1,
+    "distance_sampling_intervals": [
+      [
+        140.0,
+        210.0
+      ],
+      [
+        230.0,
+        310.0
+      ],
+      [
+        340.0,
+        460.0
+      ]
+    ],
+    "reference_thresholds": [
+      220.0,
+      325.0
+    ]
+  },
+  "training": {
+    "seeds": [
+      12345,
+      23456,
+      34567
+    ],
+    "epochs": 30,
+    "batch_size": 1,
+    "num_workers": 4,
+    "optimizer": "Adam",
+    "learning_rate": 0.0001,
+    "weight_decay": 0.0005,
+    "learning_rate_schedule": "fixed",
+    "deterministic": true,
+    "early_stopping": false,
+    "imagenet_pretrained_frontend": true,
+    "star_enhanced_inputs": true,
+    "fallback_to_raw_images": true,
+    "loss_weights": {
+      "layer": 1.0,
+      "total": 0.2,
+      "consistency": 1.0,
+      "depth": 0.1
+    }
+  },
+  "checkpoint_selection": {
+    "A0_A4_B1_B4": "validation_stratum_mae",
+    "A5_A6": "validation_total_count_mae",
+    "independent_per_seed": true
+  },
+  "raft": {
+    "checkpoint": "external",
+    "frozen": true,
+    "iterations": 4,
+    "flow_mode": "bidirectional",
+    "input_resolution": [
+      640,
+      360
+    ]
+  },
+  "variants": [
+    "A0_full_socds",
+    "A1_single_frame_stratified",
+    "A2_no_depth",
+    "A3_no_flow",
+    "A4_direct_stratified_head",
+    "A5_single_projected_density",
+    "A6_direct_count_regression"
+  ],
+  "loss_ablations": {
+    "B1_no_total_loss": {
+      "layer": 1.0,
+      "total": 0.0,
+      "consistency": 1.0,
+      "depth": 0.1
+    },
+    "B2_no_consistency_loss": {
+      "layer": 1.0,
+      "total": 0.2,
+      "consistency": 0.0,
+      "depth": 0.1
+    },
+    "B3_no_depth_loss": {
+      "layer": 1.0,
+      "total": 0.2,
+      "consistency": 1.0,
+      "depth": 0.0
+    },
+    "B4_no_layer_loss": {
+      "layer": 0.0,
+      "total": 0.2,
+      "consistency": 1.0,
+      "depth": 0.1
+    }
+  }
+}
